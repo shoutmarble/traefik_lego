@@ -1,14 +1,16 @@
 networks:
     traefik:
         external: true
-    
+
 services:
     whoami:
         image: traefik/whoami
+        container_name: whoami
+        hostname: who # subdomain
+        domainname: landingdev.xyz # domain FQDN who.landingdev.xyz
         labels:
             - traefik.http.routers.whoami.rule=Host(`who.landingdev.xyz`)
             - traefik.http.routers.whoami.entrypoints=websecure
             - traefik.http.routers.whoami.tls=true
         networks:
             - traefik
-  
