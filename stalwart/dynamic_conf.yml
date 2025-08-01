@@ -1,5 +1,27 @@
 tls:
-    certificates:
-        - certFile: /etc/traefik/certs/landingdev.xyz.pem
-          keyFile: /etc/traefik/certs/landingdev.xyz.key
+  certificates:
+    - certFile: /etc/traefik/certs/landingdev.xyz.pem
+      keyFile: /etc/traefik/certs/landingdev.xyz.key
 
+http:
+  middlewares:
+    auth:
+      basicAuth:
+        users:
+          - "test:$apr1$K8IlLB.Q$0ihPxdwxV/Q5YyhUojtHW0"  # admin:password
+    dashboard-stripprefix:
+      stripPrefix:
+        prefixes:
+          - "/dashboard"
+        forceSlash: false
+
+  routers:
+    dashboard:
+      rule: "Host(`dashboard.landingdev.xyz`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
+      service: api@internal
+      entryPoints:
+        - websecure
+      middlewares:
+        - auth
+        - dashboard-stripprefix
+      tls: true
