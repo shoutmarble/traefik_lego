@@ -25,7 +25,6 @@ services:
             - data:/opt/stalwart
             - ./certificates:/data/certificates:ro
         ports:
-            - 25:25
             - 143:143
             - 587:587            
         labels:

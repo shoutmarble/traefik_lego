@@ -9,6 +9,7 @@ services:
       - "80:80"
       - "443:443"
       # STALWART
+      - "25:25"
       - "465:465" # SMTPS submission, implicit TLS
       - "993:993" # IMAP4 secure, implicit TLS
       - "4190:4190" # sieve
