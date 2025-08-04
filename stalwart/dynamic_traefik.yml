@@ -1,0 +1,15 @@
+tls:
+  certificates:
+    - certFile: /certificates/landingdev.xyz.pem
+      keyFile: /certificates/landingdev.xyz.key
+      stores:
+        - default
+
+
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false  # true by default
+
+providers:
+  docker:
+    exposedByDefault: false  
