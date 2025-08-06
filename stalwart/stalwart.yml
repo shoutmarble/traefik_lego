@@ -1,9 +1,6 @@
 
 volumes:
     data:
-    # certs:
-    #     name: traefik_certs
-    #     external: true
 
 networks:
     traefik:
@@ -17,16 +14,20 @@ services:
         hostname: mail # subdomain
         domainname: landingdev.xyz # FQDN mail.landingdev.xyz
         restart: unless-stopped
+        ports:
+            - "587:587"
+            - "143:143"
+            - "8080:8080"
+            - "4190:4190"
+            - "110:110"
+            - "995:995"
         networks:
             traefik:
                 ipv4_address: 172.19.0.5
         volumes:
             - /etc/localtime:/etc/localtime:ro
             - data:/opt/stalwart
-            - ./certificates:/data/certificates:ro
-        ports:
-            - 143:143
-            - 587:587            
+            - ./certs:/data/certs:ro
         labels:
             - traefik.enable=true
 
@@ -35,19 +36,23 @@ services:
             - traefik.http.routers.mailserver.entrypoints=websecure
             - traefik.http.routers.mailserver.service=mailserver
             - traefik.http.services.mailserver.loadbalancer.server.port=8080
-            # SMTP (STARTTLS)
-            - traefik.tcp.routers.smtp.rule=HostSNI(`*`)
-            - traefik.tcp.routers.smtp.entrypoints=smtp
-            - traefik.tcp.routers.smtp.service=smtp
-            - traefik.tcp.services.smtp.loadbalancer.server.port=25
-            - traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2
-            # JMAP (over HTTPS)
+
+            # JMAP
             - traefik.tcp.routers.jmap.rule=HostSNI(`*`)
             - traefik.tcp.routers.jmap.tls.passthrough=true
             - traefik.tcp.routers.jmap.entrypoints=websecure
             - traefik.tcp.routers.jmap.service=jmap
             - traefik.tcp.services.jmap.loadbalancer.server.port=443
             - traefik.tcp.services.jmap.loadbalancer.proxyProtocol.version=2
+
+            
+            # SMTP (STARTTLS)
+            - traefik.tcp.routers.smtp.rule=HostSNI(`*`)
+            - traefik.tcp.routers.smtp.entrypoints=smtp
+            - traefik.tcp.routers.smtp.service=smtp
+            - traefik.tcp.services.smtp.loadbalancer.server.port=25
+            - traefik.tcp.services.smtp.loadbalancer.proxyProtocol.version=2
+
             # SMTPS (Implicit TLS)
             - traefik.tcp.routers.smtps.rule=HostSNI(`*`)
             - traefik.tcp.routers.smtps.tls.passthrough=true
@@ -55,6 +60,7 @@ services:
             - traefik.tcp.routers.smtps.service=smtps
             - traefik.tcp.services.smtps.loadbalancer.server.port=465
             - traefik.tcp.services.smtps.loadbalancer.proxyProtocol.version=2
+
             # IMAPS (Implicit TLS)
             - traefik.tcp.routers.imaps.rule=HostSNI(`*`)
             - traefik.tcp.routers.imaps.tls.passthrough=true
@@ -62,10 +68,3 @@ services:
             - traefik.tcp.routers.imaps.service=imaps
             - traefik.tcp.services.imaps.loadbalancer.server.port=993
             - traefik.tcp.services.imaps.loadbalancer.proxyProtocol.version=2
-            # Sieve
-            - traefik.tcp.routers.sieve.rule=HostSNI(`*`)
-            - traefik.tcp.routers.sieve.tls.passthrough=true
-            - traefik.tcp.routers.sieve.entrypoints=sieve
-            - traefik.tcp.routers.sieve.service=sieve
-            - traefik.tcp.services.sieve.loadbalancer.server.port=4190
-            - traefik.tcp.services.sieve.loadbalancer.proxyProtocol.version=2

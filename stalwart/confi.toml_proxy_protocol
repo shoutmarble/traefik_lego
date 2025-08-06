@@ -1,10 +1,8 @@
-
-
-certificate.default.cert = "%{file:/data/certificates/landingdev.xyz.pem}%"
+certificate.default.cert = "%{file:/data/certs/landingdev.xyz.pem}%"
 certificate.default.default = true
-certificate.default.private-key = "%{file:/data/certificates/landingdev.xyz.key}%"
+certificate.default.private-key = "%{file:/data/certs/landingdev.xyz.key}%"
 
-authentication.fallback-admin.secret = "$6$w0bS88nE3LNySTEy$Z3/qwUjd3qIFz/l5TUJNP6yaOMTanvkK6Yl/OD4FnDZWF5i11c33Yab2xTkjHN3t5ob0C4T5vjkmxH5Jldtfp/"
+authentication.fallback-admin.secret = "$6$7rSfbEiKLWhtDRwi$WqDz3xZGgMkmZF.UVk0rvrgEO1uXIbyvVaP3gqm5gYWdVnhvp/pAhqfOSoysPUVRPqwJeK9o.bfpXUrM3LWDV/"
 authentication.fallback-admin.user = "admin"
 directory.internal.store = "rocksdb"
 directory.internal.type = "internal"
@@ -18,10 +16,10 @@ server.listener.imap.bind = "[::]:143"
 server.listener.imap.protocol = "imap"
 server.listener.imaptls.bind = "[::]:993"
 server.listener.imaptls.protocol = "imap"
+server.listener.imaptls.tls.implicit = true
 server.listener.imaptls.proxy.override = true
 server.listener.imaptls.proxy.trusted-networks.0 = "172.19.0.2"
 server.listener.imaptls.proxy.trusted-networks.1 = "172.19.0.0/16"
-server.listener.imaptls.tls.implicit = true
 server.listener.pop3.bind = "[::]:110"
 server.listener.pop3.protocol = "pop3"
 server.listener.pop3s.bind = "[::]:995"
@@ -36,13 +34,14 @@ server.listener.smtp.proxy.trusted-networks.0 = "172.19.0.2"
 server.listener.smtp.proxy.trusted-networks.1 = "172.19.0.0/16"
 server.listener.submission.bind = "[::]:587"
 server.listener.submission.protocol = "smtp"
-server.listener.submissions.proxy.override = true
-server.listener.submissions.proxy.trusted-networks.0 = "172.19.0.2"
-server.listener.submissions.proxy.trusted-networks.1 = "172.19.0.0/16"
 server.listener.submissions.bind = "[::]:465"
 server.listener.submissions.protocol = "smtp"
 server.listener.submissions.tls.implicit = true
+server.listener.submissions.proxy.override = true
+server.listener.submissions.proxy.trusted-networks.0 = "172.19.0.2"
+server.listener.submissions.proxy.trusted-networks.1 = "172.19.0.0/16"
 server.max-connections = 8192
+server.proxy.trusted-networks = "172.19.0.2"
 server.socket.backlog = 1024
 server.socket.nodelay = true
 server.socket.reuse-addr = true
@@ -62,3 +61,4 @@ tracer.log.path = "/opt/stalwart/logs"
 tracer.log.prefix = "stalwart.log"
 tracer.log.rotate = "daily"
 tracer.log.type = "log"
+

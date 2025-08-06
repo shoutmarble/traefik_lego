@@ -1,47 +1,58 @@
 networks:
-  traefik:
-    external: true
+    traefik:
+        external: true
 
 services:
-  traefik:
-    image: traefik:v3.5
-    ports:
-      - "80:80"
-      - "443:443"
-      # STALWART
-      - "25:25"
-      - "465:465" # SMTPS submission, implicit TLS
-      - "993:993" # IMAP4 secure, implicit TLS
-      - "4190:4190" # sieve
-    networks:
-        traefik:
-            ipv4_address: 172.19.0.2
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./certificates:/certificates
-      - ./dynamic_traefik.yml:/dynamic_traefik.yml
-    command:
-      - --api.dashboard=true
-      - --log.level=DEBUG
-      - --accesslog=true
-      - --providers.docker.network=traefik
-      - --providers.docker.exposedByDefault=false
-      - --providers.file.filename=/dynamic_traefik.yml
-      - --entrypoints.web.address=:80
-      - --entrypoints.web.http.redirections.entrypoint.to=websecure
-      - --entrypoints.web.http.redirections.entrypoint.scheme=https
-      - --entrypoints.websecure.address=:443
-      - --entrypoints.websecure.asDefault=true
-      - --entrypoints.websecure.http.tls=true
-      # Define additional entrypoints for TCP services
-      - --entrypoints.smtp.address=:25
-      - --entrypoints.smtps.address=:465
-      - --entrypoints.imaps.address=:993
-      - --entrypoints.sieve.address=:4190      
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.mydashboard.rule=Host(`dashboard.landingdev.xyz`)
-      - traefik.http.routers.mydashboard.service=api@internal
-      - traefik.http.routers.mydashboard.middlewares=myauth
-      - traefik.http.routers.mydashboard.tls=true
-      - traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$K8IlLB.Q$0ihPxdwxV/Q5YyhUojtHW0
+    traefik:
+        image: traefik:v3.5
+        ports:
+            - "80:80"
+            - "443:443" # PASSTHROUGH, PROXY PROTOCOL
+            # TRAEFIK DASHBOARD
+            - "9090:9090"
+            # STALWART
+            # - "8080:8080" # ADMIN WEB
+            - "25:25"   # SMTP, PROXY PROTOCOL
+            # - "587:587"
+            - "465:465" # SMTPS SUBMISSION, PASSTHROUGH, PROXY PROTOCOL 
+            # - "143:143"
+            - "993:993" # IMAPTLS, PASSTHROUGH, PROXY PROTOCOL
+            # - "4190:4190" # sieve
+            # - "110:110"
+            # - "995:995"
+        networks:
+            traefik:
+                ipv4_address: 172.19.0.2
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+            - "./certs:/certs"
+            - "./dynamic_traefik.yml:/dynamic_traefik.yml"
+        command:
+            - "--api=true"
+            - "--api.dashboard=true"
+            - "--api.insecure=false"
+
+            - "--providers.docker.network=traefik"
+            - "--providers.docker.exposedByDefault=false"
+            - "--providers.file.filename=/dynamic_traefik.yml"
+
+            - "--log.level=DEBUG"
+            - "--accesslog=true"
+
+            # Entrypoints for TCP services
+            - "--entrypoints.dashboard.address=:9090"
+            - "--entrypoints.web.address=:80"
+            - "--entrypoints.websecure.address=:443"
+
+            - "--entrypoints.smtp.address=:25"
+            - "--entrypoints.smtps.address=:465"
+            - "--entrypoints.imaps.address=:993"
+            - "--entrypoints.jmap.address=:8080"
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.dashboard.rule=Host(`dashboard.landingdev.xyz`)"
+            - "traefik.http.routers.dashboard.entrypoints=dashboard"
+            - "traefik.http.routers.dashboard.service=api@internal"
+            - "traefik.http.routers.dashboard.middlewares=myauth"
+            - "traefik.http.routers.dashboard.tls=true"
+            - "traefik.http.middlewares.myauth.basicauth.users=test:$$apr1$$K8IlLB.Q$0ihPxdwxV/Q5YyhUojtHW0"
