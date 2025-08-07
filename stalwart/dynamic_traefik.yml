@@ -9,6 +9,3 @@ global:
   checkNewVersion: true
   sendAnonymousUsage: false  # true by default
 
-# providers:
-#   docker:
-#     exposedByDefault: false  

@@ -39,15 +39,19 @@ services:
             - "--log.level=DEBUG"
             - "--accesslog=true"
 
+
             # Entrypoints for TCP services
             - "--entrypoints.dashboard.address=:9090"
             - "--entrypoints.web.address=:80"
+            - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+            - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+
             - "--entrypoints.websecure.address=:443"
 
             - "--entrypoints.smtp.address=:25"
             - "--entrypoints.smtps.address=:465"
             - "--entrypoints.imaps.address=:993"
-            - "--entrypoints.jmap.address=:8080"
+            # - "--entrypoints.jmap.address=:8080"
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.dashboard.rule=Host(`dashboard.landingdev.xyz`)"
