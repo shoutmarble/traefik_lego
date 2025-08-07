@@ -12,7 +12,6 @@ services:
             - "9090:9090"
             # STALWART
             - "25:25"   # SMTP, PROXY PROTOCOL
-            # - "587:587"
             - "465:465" # SMTPS SUBMISSION, PASSTHROUGH, PROXY PROTOCOL 
             - "993:993" # IMAPTLS, PASSTHROUGH, PROXY PROTOCOL
         networks:
@@ -33,7 +32,6 @@ services:
 
             - "--log.level=DEBUG"
             - "--accesslog=true"
-
 
             # Entrypoints for TCP services
             - "--entrypoints.dashboard.address=:9090"
